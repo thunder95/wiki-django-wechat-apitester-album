@@ -1,0 +1,244 @@
+{% load left_nav %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8"/>
+    <title>柚子窝管理中心</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="/static/metronic/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/metronic/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/metronic/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/metronic/css/style-metro.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/metronic/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/metronic/css/style-responsive.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/metronic/css/default.css" rel="stylesheet" type="text/css" id="style_color"/>
+    <link href="/static/metronic/css/uniform.default.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/metronic/css/sweetalert2.min.css" rel="stylesheet" type="text/css"/>
+    <!-- END GLOBAL MANDATORY STYLES -->
+
+    <link href="/static/css/zer0Admin.css" rel="stylesheet" type="text/css"/>
+    <!-- END PAGE LEVEL STYLES -->
+
+    {% block css %} {% endblock %}
+
+    <!-- BEGIN CORE PLUGINS -->
+    <script src="/static/metronic/js/jquery-1.10.1.min.js" type="text/javascript"></script>
+    <script src="/static/metronic/js/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+
+    <!-- IMPORTANT! Load jquery-ui-1.10.1.custom.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
+    <script src="/static/metronic/js/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
+    <script src="/static/metronic/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="/static/metronic/js/jquery.uniform.min.js" type="text/javascript" ></script>
+    <script src="/static/metronic/js/sweetalert2.min.js" type="text/javascript" ></script>
+    <!-- END CORE PLUGINS -->
+
+
+    <!-- BEGIN PAGE LEVEL SCRIPTS -->
+    <script src="/static/metronic/js/app.js" type="text/javascript"></script>
+    <script src="/static/metronic/js/index.js" type="text/javascript"></script>
+    <!-- END PAGE LEVEL SCRIPTS -->
+    <script>
+        jQuery(document).ready(function () {
+            App.init(); // initlayout and core plugins
+            Index.init();
+
+            $("#user_upload_avatar").on('change', function () {
+                $("#avatar_img").attr('src', '/static/image/tiny-white.gif');
+                $("#user_upload_avatar_form").submit();
+            });
+
+        });
+
+
+        function heartBeat() {
+            $.ajax({
+                url:'/admin/wx_sync',
+                type:'GET', //GET
+                async:true,    //或false,是否异步
+                timeout:500,    //超时时间
+                dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+                success:function(data,textStatus,jqXHR){
+                    if (data.success != '1') {
+                        console.log('stop');
+                        clearInterval(timer);
+                    }
+                },
+                error:function(xhr,textStatus){
+                    clearInterval(timer);
+                }
+            })
+        }
+
+        //初始化就搞起, 三十秒一次
+        var timer =  setInterval(heartBeat,30000);
+
+    </script>
+
+    {% block js %}{% endblock %}
+
+    <link rel="shortcut icon" href="/static/metronic/image/favicon.ico"/>
+</head>
+<body class="page-header-fixed">
+
+<!-- BEGIN HEADER -->
+
+<div class="header navbar navbar-inverse navbar-fixed-top">
+
+    <!-- BEGIN TOP NAVIGATION BAR -->
+
+    <div class="navbar-inner">
+
+        <div class="container-fluid">
+
+            <!-- BEGIN LOGO -->
+
+            <a class="brand" href="/" style="padding-left: 20px">
+
+                柚子窝管理中心
+
+            </a>
+
+            <!-- END LOGO -->
+
+            <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+
+            <a href="javascript:;" class="btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
+
+                <img src="/static/metronic/image/menu-toggler.png" alt=""/>
+
+            </a>
+
+            <!-- END RESPONSIVE MENU TOGGLER -->
+
+            <!-- BEGIN TOP NAVIGATION MENU -->
+
+            <ul class="nav pull-right">
+
+                <!-- BEGIN USER LOGIN DROPDOWN -->
+
+                <li class="dropdown user">
+
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <div class="avatar">
+                            <img alt="" id="avatar_img" src="{{ user.avatar_path }}"/>
+                        </div>
+                        <span class="username">{{ user.name }}</span>
+
+                        <i class="icon-angle-down"></i>
+
+                    </a>
+
+                    <ul class="dropdown-menu">
+                        <li><a href="/"><i class="icon-edit"></i> 返回主页</a></li>
+                        <li>
+                            <a href="javascript:void(0)"><i class="icon-camera-retro"></i>
+                                <form action="/admin/set/upload/avatar" enctype="multipart/form-data" id="user_upload_avatar_form" method="post">
+                                    {% csrf_token %}
+                                    <input  accept="image/*" class="hidden-field" type="file" name="avatar" id="user_upload_avatar">
+                                </form>更改头像
+                            </a>
+                        </li>
+                        <li><a href="/admin/password_change/"><i class="icon-edit"></i> 修改密码</a></li>
+                        <li><a href="/logout"><i class="icon-key"></i> 退出</a></li>
+                    </ul>
+
+                </li>
+                <!-- END USER LOGIN DROPDOWN -->
+
+            </ul>
+
+            <!-- END TOP NAVIGATION MENU -->
+
+        </div>
+
+    </div>
+
+    <!-- END TOP NAVIGATION BAR -->
+
+</div>
+
+<!-- END HEADER -->
+<!-- BEGIN CONTAINER -->
+
+
+<div class="page-container">
+
+    <!-- BEGIN SIDEBAR -->
+
+    <div class="page-sidebar nav-collapse">
+
+        <!-- BEGIN SIDEBAR MENU -->
+
+        <ul class="page-sidebar-menu">
+
+            <li class="admin_start">
+
+                <!-- BEGIN SIDEBAR TOGGLER BUTTON -->
+
+                <div class="sidebar-toggler hidden-phone"></div>
+
+                <!-- BEGIN SIDEBAR TOGGLER BUTTON -->
+
+            </li>
+
+
+            {% nav /admin/ "文档管理" "icon-book" %}
+            
+            {#% nav /admin/repository "模板管理" "icon-file-text-alt" %#}
+            {% ifequal user.is_superuser 1 %}
+                {% nav /admin/docutype "文档类型" "icon-th-list" %}
+                {% nav /admin/youzi "柚子空间" "icon-star" %}
+                {% nav /admin/user "用户管理" "icon-user-md" %}
+            {% endifequal %}
+        </ul>
+
+        <!-- END SIDEBAR MENU -->
+
+    </div>
+
+    <!-- END SIDEBAR -->
+
+</div>
+
+<!-- END CONTAINER -->
+
+<!-- BEGIN PAGE -->
+<div class="page-content">
+
+    {% block main %}{% endblock %}
+
+</div>
+<!-- END PAGE -->
+
+<!-- BEGIN FOOTER -->
+<footer>
+<div class="footer">
+
+    <div class="footer-inner">
+
+        2018 &copy; 柚子窝
+
+    </div>
+
+    <div class="footer-tools">
+
+			<span class="go-top">
+
+			<i class="icon-angle-up"></i>
+
+			</span>
+
+    </div>
+
+</div>
+</footer>
+
+<!-- END FOOTER -->
+
+</div>
+
+</body>
+
+</html>

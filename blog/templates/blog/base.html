@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+
+        <title>{% block title%} {% endblock%}</title>
+        <!-- Bootstrap core CSS -->
+        <link href="/static/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/css/zer0Blog.css" rel="stylesheet">
+        {% block css%} {% endblock%}
+
+        <!-- jquery JavaScript -->
+        <script src="/static/js/jquery-2.1.4.min.js"></script>
+        <script src="/static/js/jquery.cookie.js"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script src="/static/js/bootstrap.min.js"></script>
+        {% block js%}{% endblock%}
+    </head>
+
+    <body id="blog" style="background: none">
+        <!-- 导航栏 -->
+        {% include "./blog/include/nav.html" %}
+        <div id="main-blog">
+            <div id="container-blog" class="container">
+                {%block main%} {% endblock %}
+            </div><!-- /.container -->
+
+            <footer>
+                <div class="container">
+                 <p class="text-center">欢迎浏览柚子小窝窝</p>
+                </div>
+            </footer>
+        </div>
+    </body>
+</html>

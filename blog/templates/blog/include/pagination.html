@@ -1,0 +1,25 @@
+<div style="text-align:center">
+    <ul class="pagination">
+        <li><a href="?page=1">&laquo;</a></li>
+        {% if objects.has_previous %}
+        <li><a href="?page={{ objects.previous_page_number }}">上一页</a></li>
+        {% else %}
+        <li><a class="colorGray" aria-disabled="false">上一页</a></li>
+        {% endif %}
+
+        {% for p in page_range %}
+            {% ifequal p objects.number %}
+            <li class="active"><a>{{ p }}</a></li>
+            {% else %}
+            <li><a href="?page={{ p }}" title="第{{ p }}页">{{ p }}</a></li>
+            {% endifequal %}
+        {% endfor %}
+
+        {% if objects.has_next %}
+        <li><a href="?page={{ objects.next_page_number }}">后一页</a></li>
+        {% else %}
+        <li><a class="colorGray" aria-disabled="false">后一页</a></li>
+        {% endif %}
+        <li><a href="?page={{ objects.paginator.num_pages }}">&raquo;</a></li>
+    </ul>
+</div>

@@ -1,0 +1,1016 @@
+{% extends './admin/base.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/ztree/css/metroStyle/metroStyle.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="/ueditor/UE/third-party/SyntaxHighlighter/shCoreDefault.css">
+<link href="/static/editor.md/css/editormd.css" rel="stylesheet" type="text/css"/>
+<link href="/static/css/selectivity-jquery.css" rel="stylesheet" type="text/css"/>
+<style type="text/css">
+    .btn-blue {
+        background: 0 0!important;
+        border: 1px solid #b4cef8;
+        color: #b4cef8;
+    }
+    .btn-grey {
+        background: 0 0!important;
+        border: 1px solid #acb9ca;
+        color: #bbc7d4;
+    }
+    .btn:hover, .btn:focus, .btn:active{
+        background: 0 0!important;
+        border: 1px solid white;
+        color: white;
+    }
+
+    .portlet-body.editor-content {
+        height: 600px;
+    }
+    .markdown_type, .editor_type{
+        height: inherit;
+    }
+    #tinymceID {
+        height: 490px;
+
+    }
+    
+    .portlet-title .caption span {
+        font-size: 14px;
+    }
+    .portlet-title .caption span i {
+        float: none;
+        color: white;
+        margin-right: 2px;
+        margin-left: 5px;
+    }
+    #menu_path {
+        margin-left: 20px;
+    }
+    .editormd-dialog-footer {
+        margin-top: -15px;
+    }
+    .form-horizontal .control-label {
+        width: 50px;
+    }
+    .form-horizontal .controls {
+        margin-left: 70px;
+    }
+    .selectivity-multiple-input {
+        width: 100% !important;
+        border: none !important;
+        box-shadow:none !important;
+    }
+    .selectivity-multiple-input-container {
+        background-color: #eef1f6;
+    }
+    #pic-qr {
+        width: 350px;
+        height: 350px;
+        margin: 0 auto;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="/static/ztree/js/jquery.ztree.core.js"></script>
+<script type="text/javascript" src="/static/ztree/js/jquery.ztree.excheck.js"></script>
+<script type="text/javascript" src="/static/ztree/js/jquery.ztree.exedit.js"></script>
+<script type="text/javascript" src="/ueditor/UE/third-party/SyntaxHighlighter/shCore.js"></script>
+<script type="text/javascript" src="/ueditor/UE/ueditor.config.js"></script>
+<script type="text/javascript" src="/ueditor/UE/ueditor.all.min.js"></script>
+<script type="text/javascript" src="/ueditor/UE/lang/zh-cn/zh-cn.js"></script>
+<script src="/static/editor.md/editormd.min.js" type="text/javascript"></script>
+<script src="/static/js/selectivity-jquery.js"></script>
+<script id="editorId" src="" type="text/javascript"></script>
+<script type="text/javascript">
+ //*********************编辑器相关*****************//
+    var text_type = {{ content_type }};
+
+    //编辑器内容
+    //var editorText = {% if content_type %}''{% else %}'{% spaceless %}{% autoescape off %}{{ content }}{% endautoescape %}{% endspaceless %}'{% endif %};
+    //var markdownText = {% if content_type %}'{% spaceless %}{% autoescape off %}{{ content }}{% endautoescape %}{% endspaceless %}'{% else %} ''{% endif %};
+    var editorText = ''
+    var markdownText = ''
+    
+    var markDownEditor = null;
+    var Ueditor = null;
+
+    function initEditor() {
+
+        if (text_type == 1) {
+            //初始化markdown编辑器
+            if (markDownEditor) {
+                return ;
+            }
+
+            markDownEditor = editormd("MarkDownEditor", {
+                path: '/static/editor.md/lib/',
+                height:'100%',
+                emoji: true,
+                flowChart : true,
+                sequenceDiagram : true,
+                taskList : true,
+                imageUpload: true,
+                imageFormats: ["jpg", "jpeg", "png", "bmp"],
+                imageUploadURL: "/admin/upload/markdown/post",
+                toolbarIcons: function () {
+                    return ["undo", "redo", "|",
+                        "bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|",
+                        "h1", "h2", "h3", "h4", "h5", "h6", "|",
+                        "list-ul", "list-ol", "hr", "|",
+                        "link", "reference-link", "image", "code", "preformatted-text", "code-block", "table", "datetime", "emoji", "html-entities", "pagebreak", "|",
+                        "goto-line", "watch", "preview", "clear", "search"]
+                },
+                onload: function () {
+                    this.setMarkdown(markdownText);
+                }
+            });
+        } else {
+            //初始化文本编辑器
+            if (Ueditor) {
+                return ;
+            }
+
+            Ueditor = UE.getEditor('editor');
+            Ueditor.ready(function() {
+                Ueditor.setContent(editorText);
+                SyntaxHighlighter.all();
+            });
+            
+            
+        }
+        
+
+        
+
+    }
+
+    
+</script>
+{% endblock %}
+
+{% block main %}
+
+    <div class="container-fluid">
+
+        <!-- BEGIN PAGE HEADER-->
+
+        <div class="row-fluid">
+
+            <div class="span12">
+
+                <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+
+                <h3 class="page-title">
+
+                    内容
+                    <small>编辑</small>
+
+                </h3>
+
+                <ul class="breadcrumb">
+
+                    <li>
+                        <i class="icon-circle-arrow-left"></i>
+
+                        <a href="/admin/">返回首页</a>
+
+                    </li>
+
+                </ul>
+
+                <!-- END PAGE TITLE & BREADCRUMB-->
+
+            </div>
+
+        </div>
+
+        <!-- END PAGE HEADER-->
+        <div class="row-fluid">
+
+            <div class="span3">
+
+                <!-- BEGIN SAMPLE TABLE PORTLET-->
+
+                <div class="portlet box grey">
+
+                    <div class="portlet-title">
+
+                        <div class="caption"><i class="icon-edit"></i>编辑目录</div>
+                        <!--
+                        <div class="actions">
+                            <a href="javascript:;" class="btn btn-sm btn-grey" onclick="saveMenu()">
+                            <i class="icon-save"></i> 保存 </a>
+                        </div>-->
+                        {% if content_type %}
+                        <div class="actions">
+                            <a href="javascript:;" class="btn btn-sm btn-grey" onclick="apiTest()">
+                            <i class="icon-bell"></i> 测试 </a>
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="portlet-body">
+                        <ul id="treeMenu" class="ztree"></ul>
+
+                    </div>
+                </div>
+
+                <!-- END SAMPLE TABLE PORTLET-->
+
+            </div>
+
+             <div class="span9">
+
+                <!-- BEGIN SAMPLE TABLE PORTLET-->
+
+                <div class="portlet box blue">
+
+                    <div class="portlet-title">
+
+                        <div class="caption"><i class="icon-edit"></i>编辑内容<span id="menu_path"><i class="icon-double-angle-right"></i>根目录</span></div>
+
+                        <div class="actions">
+                            <a href="javascript:;" class="btn btn-sm btn-blue" onclick="shareWechat()">
+                            <i class="icon-share"></i> 分享 </a>
+                            <a href="javascript:;" class="btn btn-sm btn-blue" onclick="saveContent()">
+                            <i class="icon-save"></i> 保存 </a>
+                            <a href="javascript:;" class="btn btn-sm btn-blue" onclick="switchEditor()" id="editor_btn">
+                            <i class="icon-refresh"></i> <span id="editor_label">{% if content_type %} MarkDown {% else %} Editor {% endif %} </span></a>
+                        </div>
+
+                    </div>
+
+                    <div class="portlet-body editor-content">
+                        <!--  文本编辑器 -->
+                         <div class="controls margin_left0 editor_type" {% ifequal content_type 1 %} style="display: none;" {% endifequal%}>
+
+                            <script id="editor" type="text/plain" style="width:100%;height:490px;"></script>
+                        </div>
+
+                        <!--  markdown编辑器 -->
+                        <div class="controls margin_left0 markdown_type" {% ifequal content_type 0 %} style="display: none;" {% endifequal%}>
+                            <div id="MarkDownEditor">
+                                <textarea name="content" id="markdownID"></textarea>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+
+
+                </div>
+
+                <!-- END SAMPLE TABLE PORTLET-->
+
+            </div>
+
+        </div>
+
+        <!-- wechat modal-->
+        <div id="share" class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" id="modal-title">
+                        <h4><h4>分享至微信好友    <span onclick="loginWechat()" class="label label-sm label-warning">切换用户</span></h4></h4>
+                    </div>
+                    <div class="modal-body">
+                        <img id="pic-qr" src='' />
+                        <form id="friends-list" class="form-horizontal">
+                           
+                            <div class="control-group">
+                                <label class="control-label">好友</label>
+                                <div class="controls">
+                                    <div id="friends" class="selectivity-input" style="width: 100%"></div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">群组</label>
+                                <div class="controls">
+                                    <div id="groups" class="selectivity-input" style="width: 100%"></div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">类型</label>
+                                <div class="controls">
+                                    <label class="radio">
+                                        <div class="radio">
+                                            <span><input type="radio" name="msg_type" value="1"></span>
+                                        </div>
+                                        链接
+                                    </label>
+                                    <label class="radio">
+                                        <div class="radio">
+                                            <span><input type="radio" name="msg_type" value="2"></span>
+                                        </div>
+                                        文本
+                                    </label>
+                                    <label class="radio">
+                                        <div class="radio">
+                                            <span><input type="radio" name="msg_type" value="3"></span>
+                                        </div>
+                                        PDF
+                                    </label>
+                                    <label class="radio">
+                                        <div class="radio">
+                                            <span><input type="radio" name="msg_type" value="4"></span>
+                                        </div>
+                                        好友分析
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">所有人</label>
+                                <label class="controls">
+                                    <label class="radio">
+                                    <input type="checkbox" id="send_to_all" value="1" name="send_to_all" disabled="disabled">
+                                    </label>（暂未开放此功能）
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn">关闭</button>
+                    <button type="button" id="sendMsg" class="btn blue" onclick="send()">发送</button>
+                </div>
+            </div>
+        </div>
+                        
+
+
+
+
+    </div>
+
+    <script type="text/javascript">
+       
+        //初始化默认目录id
+        var menu_id = 1;
+
+        //渲染目录结构
+        var setting = {
+            view: {
+                addHoverDom: addHoverDom,
+                removeHoverDom: removeHoverDom,
+                selectedMulti: false
+            },
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            edit: {
+                enable: true,
+                showRemoveBtn: false,
+                removeTitle: "删除目录",
+                showRenameBtn: true,
+                renameTitle: "编辑目录"
+            },
+            callback: {
+                onClick: onClick,
+                beforeRemove: beforeRemove,
+                onRemove: onRemove,
+                beforeRename: beforeRename,
+                onRename: onRename,
+                onNodeCreated: onNodeCreated,
+                onDrop: onDrop,
+                beforeExpand: beforeExpand,
+                onExpand: onExpand
+            },
+           
+        };   
+
+        var ini_num=0;
+        {% autoescape off %}
+        var zNodes =   {{ product.menu_json }};
+        {% endautoescape %}
+
+        //最后一个值保存上一个自增ID
+        var lastId = zNodes.pop().lastId
+
+        function addHoverDom(treeId, treeNode) {
+            var sObj = $("#" + treeNode.tId + "_span");
+            if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
+
+            //重写添加按钮
+            var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                + "' title='添加目录' onfocus='this.blur();'></span>";
+            sObj.after(addStr);
+            var btn = $("#addBtn_"+treeNode.tId);
+            if (btn) btn.bind("click", function(){
+                var zTree = $.fn.zTree.getZTreeObj("treeMenu");
+                zTree.addNodes(treeNode, {id:(lastId), pId:treeNode.id, name:"新标题" + (lastId++)});
+                return false;
+            });
+            
+            //重写删除按钮
+            var editObj = $("#"+treeNode.tId+"_edit");
+            var delStr = "<span class='button remove' id='delBtn_" + treeNode.tId
+                + "' title='删除目录' onfocus='this.blur();'></span>";
+            editObj.after(delStr);
+            var delBtn = $("#delBtn_"+treeNode.tId);
+            if (delBtn) delBtn.bind("click", function(){
+                swal({
+                    title: "您确定要执行此删除操作吗？",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    closeOnConfirm:false,  
+                    closeOnCancel:false  
+                }).then((result) => {
+                    if (result) {
+                        var zTree = $.fn.zTree.getZTreeObj("treeMenu");
+                        zTree.removeNode(treeNode, {treeId:treeId, treeNode:treeNode});
+                    }
+                })
+
+                return false;
+            });
+        };
+        function removeHoverDom(treeId, treeNode) {
+            $("#addBtn_"+treeNode.tId).unbind().remove();
+            $("#delBtn_"+treeNode.tId).unbind().remove();
+        };
+
+        function filter(treeId, parentNode, childNodes) {
+            if (!childNodes) return null;
+            for (var i=0, l=childNodes.length; i<l; i++) {
+                childNodes[i].name = childNodes[i].name.replace(/\.n/g, '.');
+            }
+            return childNodes;
+        }
+
+        //只在单击的时候打开
+        function onClick(e,treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("treeMenu");
+            zTree.expandNode(treeNode, null, null, null, true);
+
+            //ajax获取路径和内容渲染到
+            $('#menu_path').html(getMenuPath(treeNode));
+            getContent(treeNode.id);
+        }
+
+        //获取目录的父级路径
+        function getMenuPath(treeNode){
+            var html = "";
+
+            if (treeNode.pId > 0) {
+                html += getMenuPath(treeNode.getParentNode());
+            }
+            
+            html += '<i class="icon-double-angle-right"></i>'+treeNode.name;
+            return html;
+        }
+
+        //提示并关闭内容窗口
+        function beforeRemove(treeId, treeNode) {
+            if (treeNode.id == 1) {
+                swal({
+                  title: "出错了",
+                  text: "不能删除根目录",
+                  type: "error",
+                  confirmButtonText: "关闭"
+                });
+                return false;
+            }
+
+            return true;
+        }
+        //删除后,更新后台目录
+        function onRemove(e,treeId, treeNode) {
+            saveMenu();
+        }
+        //改名前的判断
+        function beforeRename(treeId, treeNode, newName) {
+            if (treeNode.id == 1 && newName != '根目录') {
+                setTimeout(function() {
+                    $.fn.zTree.getZTreeObj("treeMenu").cancelEditName();
+                    swal({
+                      title: "出错了",
+                      text: "不允许修改根目录",
+                      type: "error",
+                      confirmButtonText: "关闭"
+                    });
+                }, 0)
+                return false;
+            } else if (newName.length == 0) {
+                setTimeout(function() {
+                    $.fn.zTree.getZTreeObj("treeMenu").cancelEditName();
+                    swal({
+                      title: "出错了",
+                      text: "节点名称不能为空",
+                      type: "error",
+                      confirmButtonText: "关闭"
+                    });
+                }, 0)
+                return false;
+            } else {
+                return true;
+
+            }
+            
+        }
+        //改名后发ajax
+        function onRename(e,treeId, treeNode) {
+            //console.log(treeNode);
+            saveMenu();
+        }
+        //新增有新名字,ajax提交
+        function onNodeCreated(e,treeId, treeNode) {
+            if (ini_num<zNodes.length) {
+                ini_num++;
+                return;
+            }
+            saveMenu();
+        }
+        //拖动前的pid和位置并发送ajax
+        function onDrop(event, treeId, treeNode, targetNode, moveType, isCopy) {
+            saveMenu();
+        }
+
+
+        var json_str = '';
+        $(document).ready(function(){
+            //初始化目录结构
+            var ztree = $.fn.zTree.init($("#treeMenu"), setting, zNodes);
+            ztree.expandAll(false);
+
+            //解决BUG:初始化隐藏modal
+            $('#share').hide();
+            getContent(1);
+            switchEditor();
+        });
+
+        //保存目录
+        function saveMenu() {
+            var ztree = $.fn.zTree.getZTreeObj("treeMenu");
+            json_str = '[';
+            json_str += createJson(ztree.getNodes(),0);
+            json_str += '{lastId: '+lastId+'},';
+            json_str += ']';
+
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"update",
+                data:{'pk': {{product.id}}, 'menu':json_str},
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    //console.log(data);
+                    //alert('ok');
+                },
+            });
+        }
+
+        //生成json树
+        function createJson(obj, pid) {
+            var str = '';
+            for (var k = 0, length = obj.length; k < length; k++) {
+                 str += '{ id:'+obj[k].id+', pId:'+pid+', name:"'+obj[k].name+'"},';
+                 if (typeof(obj[k].children)!="undefined" && obj[k].children.length>0) {
+                    str += createJson(obj[k].children, obj[k].id);
+                 }
+            }
+            return str;
+        }
+        var curExpandNode = null;
+        function beforeExpand(treeId, treeNode) {
+            var pNode = curExpandNode ? curExpandNode.getParentNode():null;
+            var treeNodeP = treeNode.parentTId ? treeNode.getParentNode():null;
+            var zTree = $.fn.zTree.getZTreeObj("treeMenu");
+            for(var i=0, l=!treeNodeP ? 0:treeNodeP.children.length; i<l; i++ ) {
+                if (treeNode !== treeNodeP.children[i]) {
+                    zTree.expandNode(treeNodeP.children[i], false);
+                }
+            }
+            while (pNode) {
+                if (pNode === treeNode) {
+                    break;
+                }
+                pNode = pNode.getParentNode();
+            }
+            if (!pNode) {
+                singlePath(treeNode);
+            }
+
+        }
+        function singlePath(newNode) {
+            if (newNode === curExpandNode) return;
+
+            var zTree = $.fn.zTree.getZTreeObj("treeMenu"),
+                    rootNodes, tmpRoot, tmpTId, i, j, n;
+
+            if (!curExpandNode) {
+                tmpRoot = newNode;
+                while (tmpRoot) {
+                    tmpTId = tmpRoot.tId;
+                    tmpRoot = tmpRoot.getParentNode();
+                }
+                rootNodes = zTree.getNodes();
+                for (i=0, j=rootNodes.length; i<j; i++) {
+                    n = rootNodes[i];
+                    if (n.tId != tmpTId) {
+                        zTree.expandNode(n, false);
+                    }
+                }
+            } else if (curExpandNode && curExpandNode.open) {
+                if (newNode.parentTId === curExpandNode.parentTId) {
+                    zTree.expandNode(curExpandNode, false);
+                } else {
+                    var newParents = [];
+                    while (newNode) {
+                        newNode = newNode.getParentNode();
+                        if (newNode === curExpandNode) {
+                            newParents = null;
+                            break;
+                        } else if (newNode) {
+                            newParents.push(newNode);
+                        }
+                    }
+                    if (newParents!=null) {
+                        var oldNode = curExpandNode;
+                        var oldParents = [];
+                        while (oldNode) {
+                            oldNode = oldNode.getParentNode();
+                            if (oldNode) {
+                                oldParents.push(oldNode);
+                            }
+                        }
+                        if (newParents.length>0) {
+                            zTree.expandNode(oldParents[Math.abs(oldParents.length-newParents.length)-1], false);
+                        } else {
+                            zTree.expandNode(oldParents[oldParents.length-1], false);
+                        }
+                    }
+                }
+            }
+            curExpandNode = newNode;
+        }
+
+        function onExpand(event, treeId, treeNode) {
+            curExpandNode = treeNode;
+        }
+
+        //切换编辑器
+        function switchEditor() {
+
+            if (text_type == 1) {
+                //editor
+                $('.markdown_type').hide();
+                $('.editor_type').show();
+                text_type = 0;
+                $('#editor_label').html('Editor');
+                
+            } else {
+                //markdown
+                $('.markdown_type').show();
+                $('.editor_type').hide();
+                text_type = 1;
+                $('#editor_label').html('MarkDown')
+               
+            }
+
+            
+            initEditor();
+        }
+
+        //保存文档内容
+        function saveContent() {
+            var content = '';
+            if (text_type) {
+                content = $('#markdownID').val();
+            } else {
+                content = Ueditor.getContent();
+            }
+          
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"update/content",
+                data:{'product_id': {{product.id}}, 'menu_id':menu_id, 'content_type':text_type, 'content':content},
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    if (data.success) {
+                        swal(
+                            "操作成功",
+                            data.message,
+                            'success'
+                        )
+
+                    } else {
+                        swal({
+                          title: "操作失败",
+                          text: data.message,
+                          type: "error",
+                          confirmButtonText: "关闭"
+                        });
+                    }
+                },
+            });
+        }
+
+        //ajax获取文档内容
+        function getContent(id) {
+            menu_id = id;
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"retrieve/content",
+                data:{'product_id': {{product.id}}, 'menu_id':menu_id},
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    if (data.success) {
+
+                        //添加文本到编辑器
+                        if (data.data.content_type) {
+                            if (markDownEditor) {
+                                //已加载过
+                                markDownEditor.setMarkdown(data.data.content);
+                            } else {
+                                //维嘉在过
+                                markdownText = data.data.content;
+                            }
+                        } else {
+                            if (Ueditor) {
+                                Ueditor.setContent(data.data.content)
+                            } else {
+                                editorText = data.data.content;
+                            }
+                            
+                        }
+
+                        //切换类型
+                        if (data.data.content_type != text_type) {
+                            switchEditor();
+                        }
+
+                    } else {
+                        swal({
+                          title: "操作失败",
+                          text: data.message,
+                          type: "error",
+                          confirmButtonText: "关闭"
+                        });
+                    }
+                },
+            });
+        }
+
+        var waitScan = null;
+
+        //从数据库中拉取好友信息
+        function shareWechat() {
+             //立即抓取好友列表
+            $.get('dbfriends', function(data){ 
+                if(data.success == "1") {
+                     //渲染到select
+                    $('#share').modal('show');
+                    renderFriends(data.data);
+                } else {
+                    loginWechat();
+                }
+               
+            }, 'json');  
+
+            //ajax->db获取
+            /*
+            var flag = false;
+            if (flag) {
+                renderFriends([]);
+            } else {
+                loginWechat();
+
+            }*/
+        }
+
+        //登录微信弹出层
+        function loginWechat()  {
+            
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"retrieve/wechat",
+                data:{'pk': {{product.id}}},
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    //显示二维码
+                    $('#share').modal('show');
+                    $('#pic-qr').show().attr("src", data.data);
+                    $('.modal-footer').hide();
+                    $('#modal-title').html('<h4>请用手机扫码登录    <span onclick="loginWechat()" class="label label-sm label-warning">切换二维码</span></h4>');
+                    $('#friends-list').hide();
+            
+                    //发起等待扫描的请求
+                    $.get('waitScan', function(resp){  
+                        if (resp.success == '1') {
+                            //关闭interval
+                            clearInterval(timer);
+                            //开始拉取好友
+                            $('#modal-title').html('<h4>正在拉取好友信息...</h4>');
+                            $('#pic-qr').show().attr("src", '/static/loading.gif');
+
+                            //立即抓取好友列表
+                            $.get('wxfriends', function(data){  
+                                //渲染到select
+                                renderFriends(data.data);
+
+                                //启动心跳
+                                timer =  setInterval(heartBeat,30000);
+
+                            }, 'json');  
+
+
+                            //发送消息
+                            /*
+                            $.get('send/msg', function(data){  
+                                console.log(data)
+                            }, 'json'); */
+
+
+
+                        }
+                        
+                    }, 'json');  
+                },
+            });
+
+            
+        }
+
+        //渲染好友信息
+        function renderFriends(data){
+            $('#friends').selectivity({
+                items: data.friends,
+                multiple: true,
+                placeholder: '  请选择好友  '
+            });
+            $('#groups').selectivity({
+                items: data.groups,
+                multiple: true,
+                placeholder: '  请选择群组  '
+            });
+            $('.modal-footer').show();
+            $('#modal-title').html('<h4>分享至微信好友    <span onclick="loginWechat()" class="label label-sm label-warning">切换用户</span></h4>');
+            $('#friends-list').show();
+            $('#pic-qr').hide();
+
+        }
+
+        //测试发送消息
+        function send()  {
+
+            var opt =$("input[name='msg_type']:checked").val(); //暂为文本
+            var to_user = $('#friends').selectivity('value'); //好友
+            to_user = to_user.concat($('#groups').selectivity('value')); //合并群组
+
+            var msg =  ''
+
+            if (opt == '1' || opt == '3') {
+                msg = 'http://localhost:8099/document/{{product.id}}?subMenu='+menu_id;
+               
+            } else if (opt == '2') {
+                if (text_type) {
+                    msg = $('#markdownID').val();
+                } else {
+                    msg = Ueditor.getContentTxt();
+                }
+
+            } else if ( opt == '4') {
+                msg = '好友分析'
+            }
+
+            console.log(msg);
+            console.log(to_user);
+
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"send/msg",
+                data:{'to_user': to_user, 'msg':msg, 'opt': opt},
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    if(data.success == '1') {
+                        $('#share').modal('hide');
+                    } else {
+                        console.log('error--needs login');
+                        loginWechat();
+                    }
+                },
+            });
+                        
+        }
+
+        //接口测试
+        function apiTest(){
+            window.open("/api/{{product.id}}/"+menu_id,"_blank");      
+            /*
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"api/test",
+                data:{'product_id': {{product.id}}, 'menu_id':menu_id},
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    console.log(data)
+                    if (data.success) {
+                        swal(
+                            "操作成功",
+                            data.message,
+                            'success'
+                        )
+
+                    } else {
+                        swal({
+                          title: "操作失败",
+                          text: data.message,
+                          type: "error",
+                          confirmButtonText: "关闭"
+                        });
+                    }
+                },
+            });*/
+        }
+
+        //测试微信好友列表
+        function  shareWechat2(){
+             var cities = [
+                { id: 4, text: '<div style="background: url(/static/wechat/test.png) no-repeat center left;padding-left: 50px;background-size: 30px 30px;line-height: 30px;"/>Barcelona</div>'},
+                { id: 6, text: '<div style="background: url(/static/wechat/test.png) no-repeat center left;padding-left: 50px;background-size: 30px 30px;line-height: 30px;"/>Birmingham</div>' },
+                { id: 7, text: '<div style="background: url(/static/wechat/test.png) no-repeat center left;padding-left: 50px;line-height: 30px;"/>Bradford</div>' },
+                { id: 16, text: 'Dublin' },
+                { id: 21, text: 'Glasgow' },
+                { id: 26, text: 'Leeds' },
+                { id: 28, text: 'Lisbon' },
+                { id: 30, text: 'London' },
+                { id: 32, text: 'Madrid' },
+                { id: 33, text: 'Málaga' },
+                { id: 34, text: 'Manchester' },
+                { id: 46, text: 'Seville' },
+                { id: 47, text: 'Sheffield' },
+                { id: 53, text: 'Valencia' },
+                { id: 59, text: 'Zaragoza' }
+            ];
+
+            var flag = true;
+            if (flag) {
+                $('.modal-footer').hide();
+                //$('#modal-title').html('<h4>请用手机扫码登录</h4>');
+                $('#friends-list').hide();
+                //$('#pic-qr').show().attr("src", '/static/wechat/QR.png');
+                $('#modal-title').html('<h4>正在拉取好友信息...</h4>');
+                $('#pic-qr').show().attr("src", '/static/loading.gif');
+            } else {
+                $('#friends').selectivity({
+                    items: cities,
+                    multiple: true,
+                    placeholder: '  请选择用户  '
+                });
+                $('.modal-footer').show();
+                $('#modal-title').html('<h4>分享至微信好友    <span onclick="loginWechat()" class="label label-sm label-warning">切换用户</span></h4>');
+                $('#friends-list').show();
+                $('#pic-qr').hide();
+            }
+           
+
+            $('#share').modal('show');
+
+
+
+        }
+
+
+
+    </script>
+{% endblock %}

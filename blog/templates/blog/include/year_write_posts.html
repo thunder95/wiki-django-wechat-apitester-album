@@ -1,0 +1,21 @@
+<div>
+    <div class="panel panel-blog">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <span class="glyphicon glyphicon-flag"></span>
+                归档
+                <span class="glyphicon glyphicon-remove btn panel-close pull-right"></span>
+                <span class="glyphicon glyphicon-chevron-up btn panel-collapse pull-right"  data-toggle="collapse" data-target="#year-write-posts"></span>
+            </h3>
+        </div>
+        <ul id="year-write-posts" class="list-group collapse in">
+            {% for man in man_list%}
+                <li class="list-group-item">
+                <a href="/author/{{ man.id }}"><span class="hotest-post-title">{{man.name}}</span></a>
+                <span class="badge">{{man.counts}}</span>
+                </li>
+            {% endfor %}
+            </li>
+        </ul>
+    </div>
+</div>

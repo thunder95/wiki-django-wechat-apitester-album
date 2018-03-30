@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+    <TITLE> 柚子窝相册管理</TITLE>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" href="/static/waterfall/style.css" type="text/css" media="screen" />
+    <style type="text/css">
+    .caption {
+        font-size: 20px;
+        text-align: center;
+        position: fixed;
+        height: 70px;
+        width: 100%;
+        color: #ffffff;
+        top:0;
+        z-index: 99;
+
+
+        background: rgb(105,155,200);
+        background: -moz-radial-gradient(top left, ellipse cover, rgba(105,155,200,1) 0%, rgba(181,197,216,1) 57%);
+         background: -webkit-gradient(radial, top left, 0px, top left, 100%, color-stop(0%,rgba(105,155,200,1)), color-stop(57%,rgba(181,197,216,1)));
+         background: -webkit-radial-gradient(top left, ellipse cover, rgba(105,155,200,1) 0%,rgba(181,197,216,1) 57%);
+         background: -o-radial-gradient(top left, ellipse cover, rgba(105,155,200,1) 0%,rgba(181,197,216,1) 57%);
+         background: -ms-radial-gradient(top left, ellipse cover, rgba(105,155,200,1) 0%,rgba(181,197,216,1) 57%);
+         background: radial-gradient(ellipse at top left, rgba(105,155,200,1) 0%,rgba(181,197,216,1) 57%);
+         filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#699bc8', endColorstr='#b5c5d8',GradientType=1 );
+
+    }
+
+    .caption h1 {
+        font-size: 36px;
+        line-height: 48px;
+    }
+    </style>
+    <script type="text/javascript" src="/static/waterfall/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        $(".zoom").hide();
+
+        $(".zoom").each(function(){//遍历所有对象
+        var src=$(this).siblings("img").attr("src");
+            $(this).attr({href:src});
+        });
+
+        $("#nav li").click(function(){
+            $("#nav a").removeClass("hover");
+            $(this).find("a").addClass("hover");
+        });
+
+        $("#waterfall li").mouseover(function(){
+            $(this).addClass("hover");
+            $(this).find(".zoom").show();
+        });
+
+        $("#waterfall li").mouseout(function(){
+            $(this).removeClass("hover");
+            $(this).find(".zoom").hide();
+        });
+    });
+    </script>
+
+
+</HEAD>
+
+
+<body>
+<div class="caption">
+    <h1>{{ ablum_detail.title }}</h1>
+    <p>{{ ablum_detail.creator.name }} 于 {{ ablum_detail.create_time |date:"Y-m-d H:i:s"}} 创建</p>
+</div>
+
+
+
+<div id="main" style="margin-top:90px;">
+
+    <ul id="waterfall">
+        {% for pic in album_list %}
+        <li>
+            <div class="img_block">
+                <img src="/upload/youzi/{{ pic.name }}" />
+                <a href="#" rel="lightbox[plants]" title="{{ pic.origin_name }}" class="zoom">放大</a>
+                <p>{{ pic.origin_name }}</p>
+          </div>
+        </li>
+        {% endfor %}
+
+    </ul>
+
+    <div class="clear"></div>
+
+    <div style="visibility:hidden" id="loading" class="loading"><p><img src="/static/waterfall/images/loading.gif" /><img src=""/static/waterfall/images/load.gif" /></p></div>
+
+</div>
+
+<script type="text/javascript" src="/static/waterfall/lightbox.js"></script>
+<script type="text/javascript" src="/static/waterfall/jquery.masonry.min.js"></script>
+<script type="text/javascript">
+$(function(){
+    var $waterfall = $('#waterfall');
+    $waterfall.masonry({
+        columnWidth: 230
+    });
+});
+</script>
+
+
+</body>
+
+</html>
+
+

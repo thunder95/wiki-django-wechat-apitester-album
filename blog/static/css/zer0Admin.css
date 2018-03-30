@@ -1,0 +1,95 @@
+body{
+    color: #4C4C4C;
+}
+
+a{
+    color: #4C4C4C;
+}
+
+@media(min-height: 600px){
+.page-content {
+    margin-left: 225px;
+    margin-top: 0px;
+    min-height: 760px;
+}}
+
+@media(min-height: 800px){
+.page-content {
+    margin-left: 225px;
+    margin-top: 0px;
+    min-height: 890px;
+}}
+
+.padding_left10{
+    padding-left: 10px !important;
+}
+
+.margin_left0{
+    margin-left: 0px !important;
+}
+
+.margin_left80{
+    margin-left: 80px !important;
+}
+
+.admin_start{
+    margin-bottom: 10px !important;
+}
+
+.colorGray{
+    color: #94908e !important;
+}
+
+.top10{
+    top: 10% !important;
+}
+
+.errorlist{
+    color: red;
+}
+
+input[type="text"],
+input[type="number"]{
+    height: 34px;
+    margin-bottom: 0px;
+}
+
+.error{
+    color: red;
+}
+
+.avatar {
+    width: 29px;
+    height: 29px;
+    display: inline-block;
+    border-radius: 50% !important;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    border: 2px solid white;
+    border-radius: 50% !important;
+    box-sizing: border-box;
+}
+
+#user_upload_avatar{
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 30px;
+    bottom: 0;
+    display: inline-block;
+    background-color: white;
+    z-index: 1;
+}
+
+.hidden-field {
+    width: 100% !important;
+    opacity: 0;
+}
+
+#user_upload_avatar_form{
+    margin: 0;
+    display: inline-block;
+}

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>胡柚子</title>
+<link href="/static/css/bootstrap/bootstrap.css" rel="stylesheet">
+<link href="/static/youzi/css/style.css" rel="stylesheet" type="text/css" media="all" />
+<link href="/static/youzi/css/album.css" rel="stylesheet" type="text/css" media="all" />
+<link href="/static/youzi/css/style-albe-timeline.css" rel="stylesheet" type="text/css" media="all" />
+<style type="text/css">
+    .panel-heading {
+        text-align: left !important;
+    }
+    .panel-footer {
+        clear: both;
+        padding: 5px 15px !important;
+    }
+    .img-responsive{
+        margin: 0px 5px 5px 5px !important;
+        max-height: 200px;
+    }
+    img.img-responsive{
+        transition: all 0.6s;
+    }
+    img.img-responsive:hover{
+        transform: scale(3);
+    }
+
+
+</style>
+<!-- for-mobile-apps -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="胡柚子 成长空间" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- //for-mobile-apps -->
+<!--fonts-->
+
+<!--//fonts-->
+<script src="/static/js/jquery-2.1.4.min.js"> </script>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!-- js -->
+<script src="/static/js/bootstrap.min.js"></script>
+<!-- js -->
+<script type="text/javascript" src="/static/youzi/js/move-top.js"></script>
+<script type="text/javascript" src="/static/youzi/js/easing.js"></script>
+<script type="text/javascript" src="/static/js/echarts-all.js"></script>
+<script type="text/javascript" src="/static/youzi/js/jquery-albe-timeline.min.js"></script>
+<!--/script-->
+<script type="text/javascript">
+    var crousel_data = {{ crousel_pics | safe }};
+
+    jQuery(document).ready(function($) {
+        $(".scroll").click(function(event){
+            event.preventDefault();
+            $('html,body').animate({scrollTop:$(this.hash).offset().top},900);
+        });
+    });
+</script>
+<script type="text/javascript" src="/static/youzi/js/ge1doot.js"></script>
+<script type="text/javascript" src="/static/youzi/js/album.js"></script>
+</head>
+<body>
+<!--header-->
+<div id="home" class="header">
+
+</div>
+<div class="header-nav effect2">
+	<div class="container">
+		<div class="navigation">
+			<nav class="navbar navbar-default">
+				<div class="navbar-header">
+					  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"> </span>
+						<span class="icon-bar"> </span>
+						<span class="icon-bar"> </span>
+					  </button>
+					</div>
+					<div class="collapse navbar-collapse nav-wil" id="bs-example-navbar-collapse-1">
+					  <ul class="nav navbar-nav">
+						<li class="active"><a class="scroll" href="#home">帅气的我 <span class="sr-only">(current)</span></a></li>
+						<li><a class="scroll" href="#About">相片</a></li>
+						<li><a class="scroll" href="#Portfolio">关于我</a></li>
+						<li><a class="scroll" href="#Contact">成长记录</a></li>
+					  </ul>
+			  <div class="clearfix"> </div>
+			</div><!-- /.navbar-collapse -->
+		</nav>
+	</div>
+	</div>
+	</div>
+	<div class="clearfix"> </div>
+</div>
+<!-- script-for-menu -->
+ <script>
+$("span.menu").click(function(){
+    $(".top-nav ul").slideToggle("slow" , function(){
+    });
+});
+ </script>
+ <!-- script-for-menu -->
+<div class="banner">
+	<div class="container">
+		<div class="grid__item color-9">
+				<a class="link link--ilin" href="#"><span>柚子</span><span>窝</span></a>
+			</div>
+		<p>调 皮 捣 蛋, 帅 气 纵 横<span>之我</span></p>
+	</div>
+</div>
+<div class="content-part">
+	<div class="body-pic">
+		<div class="container">
+			<img src="/upload/youzi/{{ top_pic }}" width="50%" height="50%" />
+		</div>
+		<div class="body-pic-bottom">
+
+		</div>
+
+	</div>
+</div>
+<div class="clearfix"> </div>
+
+<div id="About" class="skills" style="margin-bottom:800px">
+	<div class="container">
+		<div class="skills-info">
+			<h3>相片</h3>
+
+		</div>
+
+	</div>
+	<canvas id="canvas" style="min-height: 595px">你的浏览器不支持HTML5画布技术，请使用谷歌浏览器。</canvas>
+
+</div>
+
+<div class="clearfix"> </div>
+
+<div id="Portfolio" class="portfolio">
+			<div class="container">
+				<h3>关于我</h3>
+
+				<div class="youzi-info">
+
+				</div>
+			</div>
+</div>
+
+<div id="Contact" class="contact">
+	<div class="container">
+		<div class="content_middle_bottom">
+          <h3 class="tz-title-3">成长记录</h3>
+		  <h4>小柚子健健康康开开心心的成长起来了~~~~~</h4>
+		</div>
+
+		<div id="chart" style="width: 100%;height:500px;"></div>
+
+		<div id="myTimeline">
+    	</div>
+
+		<div class="clearfix"> </div>
+	</div>
+</div>
+
+<div class="footer">
+
+   <script type="text/javascript">
+		$(document).ready(function() {
+			/*
+			var defaults = {
+	  			containerID: 'toTop', // fading element id
+				containerHoverID: 'toTopHover', // fading element hover id
+				scrollSpeed: 1200,
+				easingType: 'linear'
+	 		};
+			*/
+
+			$().UItoTop({ easingType: 'easeOutQuart' });
+
+			//echarts
+			var option = {
+				    tooltip : {
+				        trigger: 'axis'
+				    },
+				    legend: {
+				        data:['身高','体重','头围']
+				    },
+				    toolbox: {
+				        show : true,
+				        feature : {
+				            //mark : {show: true},
+				            //dataView : {show: true, readOnly: false},
+				            magicType : {show: true, type: ['stack', 'tiled']},
+				            restore : {show: true},
+				            saveAsImage : {show: true}
+				        }
+				    },
+				    calculable : true,
+				    xAxis : [
+				        {
+				            type : 'category',
+				            splitLine:{show: false},//去除网格线
+				            boundaryGap : false,
+				            data : {{ growth_list.x | safe }}
+				        }
+				    ],
+				    yAxis : [
+				        {
+				            type : 'value',
+				            splitLine:{show: false},//去除网格线
+				        }
+				    ],
+				    series : [
+				        {
+				            name:'身高',
+				            type:'line',
+				            stack: '总量',
+				            smooth: true,
+				            //symbol: 'image://../asset/ico/favicon.png',     // 系列级个性化拐点图形
+				            symbolSize: 8,
+				            data: {{ growth_list.y1 | safe }}
+				        },
+				        {
+				            name:'体重',
+				            type:'line',
+				            stack: '总量',
+				            symbol: 'arrow',
+				            symbolSize: 6,
+				            symbolRotate: -45,
+				            itemStyle: {
+				                normal: {
+				                    color: 'red',
+				                    lineStyle: {        // 系列级个性化折线样式
+				                        width: 2,
+				                        type: 'dashed'
+				                    }
+				                },
+				                emphasis: {
+				                    color: 'blue'
+				                }
+				            },
+				            data: {{ growth_list.y2 | safe }}
+				        },
+				        {
+				            name:'头围',
+				            type:'line',
+				            symbol:'emptyCircle',
+				            itemStyle: {
+				                normal: {
+				                    lineStyle: {            // 系列级个性化折线样式，横向渐变描边
+				                        width: 2,
+				                        /*
+				                        color: (function (){
+				                            var zrColor = require('zrender/tool/color');
+				                            return zrColor.getLinearGradient(
+				                                0, 0, 1000, 0,
+				                                [[0, 'rgba(255,0,0,0.8)'],[0.8, 'rgba(255,255,0,0.8)']]
+				                            )
+				                        })(),*/
+				                        shadowColor : 'rgba(0,0,0,0.5)',
+				                        shadowBlur: 10,
+				                        shadowOffsetX: 8,
+				                        shadowOffsetY: 8
+				                    }
+				                },
+				                emphasis : {
+				                    label : {show: true}
+				                }
+				            },
+				            data: {{ growth_list.y3 | safe }}
+				        }
+				    ]
+				};
+			var myChart = echarts.init(document.getElementById('chart'));
+			myChart.setOption(option);
+			window.onresize = myChart.resize;
+
+			//timeline
+            /*
+			var data = [
+				{
+					time: '2015-03-29',
+					header: 'Sample of header',
+					body: [{
+						tag: 'h1',
+						content: "Lorem ipsum"
+					},
+					{
+						tag: 'p',
+						content: 'Lorem ipsum dolor sit amet, nisl lorem, wisi egestas orci tempus class massa, suscipit eu elit urna in urna, gravida wisi aenean eros massa, cursus quisque leo quisque dui.'
+					}],
+					footer: 'Sample of footer. See <a href=\"https://github.com/Albejr/jquery-albe-timeline\" target=\"_blank\">more details</a>'
+				},
+				{
+					time: '2015-04-15',
+					body: [{
+						tag: 'h1',
+						content: "Basic content"
+					},
+					{
+						tag: 'p',
+						content: 'Lorem ipsum dolor sit amet, nisl lorem, wisi egestas orci tempus class massa, suscipit eu elit urna in urna, gravida wisi aenean eros massa, cursus quisque leo quisque dui.'
+					}],
+				},
+				{
+					time: '2016-01-20',
+					body: [{
+						tag: 'img',
+						attr: {
+							src: '../img/qrcode.png',
+							width: '150px',
+							cssclass: 'img-responsive'
+						}
+					},
+					{
+						tag: 'h2',
+						content: 'Sample with image'
+					},
+					{
+						tag: 'p',
+						content: 'Lorem ipsum dolor sit amet, nisl lorem, wisi egestas orci tempus class massa, suscipit eu elit urna in urna, gravida wisi aenean eros massa, cursus quisque leo quisque dui. See <a href=\"https://github.com/Albejr/jquery-albe-timeline\" target=\"_blank\" class=\"mylink\">more details</a>'
+					}]
+				},
+				{
+					time: '2013-01-20',
+					body: [{
+						tag: 'img',
+						attr: {
+							src: '../img/girl.png',
+							width: '100px',
+							cssclass: 'img-responsive'
+						}
+					},
+					{
+						tag: 'h2',
+						content: 'Sample with image rigth'
+					},
+					{
+						tag: 'p',
+						content: 'Lorem ipsum dolor sit amet, nisl lorem, wisi egestas orci tempus class massa, suscipit eu elit urna in urna, gravida wisi aenean eros massa, cursus quisque leo quisque dui.'
+					}]
+				}
+			];*/
+            var data = {{ events_html | safe }}
+           $("#myTimeline").albeTimeline(data);
+
+		});
+	</script>
+	<a href="#" id="toTop" style="display: block;"><span id="toTopHover"></span> <span id="toTopHover" style="opacity: 1;"> </span></a>
+</div>
+</body>
+</html>

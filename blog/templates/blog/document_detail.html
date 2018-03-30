@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+    <TITLE> 柚子窝文档管理</TITLE>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <link href="/static/css/bootstrap/bootstrap_old.css" rel="stylesheet">
+    <link href="/static/editor.md/css/editormd.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/css/docu_show.css" rel="stylesheet">
+
+
+    <script src="/static/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/static/ztree/js/jquery.ztree.core.js"></script>
+
+    <!-- markdown相关 -->
+    <script src="/static/editor.md/lib/marked.min.js" type="text/javascript"></script>
+    <script src="/static/editor.md/lib/prettify.min.js" type="text/javascript"></script>
+    <script src="/static/editor.md/lib/raphael.min.js" type="text/javascript"></script>
+    <script src="/static/editor.md/lib/underscore.min.js" type="text/javascript"></script>
+    <script src="/static/editor.md/lib/sequence-diagram.min.js" type="text/javascript"></script>
+    <script src="/static/editor.md/lib/flowchart.min.js" type="text/javascript"></script>
+    <script src="/static/editor.md/lib/jquery.flowchart.min.js" type="text/javascript"></script>
+    <script src="/static/editor.md/editormd.min.js" type="text/javascript"></script>
+    <script src="/static/metronic/js/bootstrap.min.js" type="text/javascript"></script>
+
+    <SCRIPT type="text/javascript">
+        <!--
+
+        //初始化默认目录id
+        var menu_id = 1;
+
+        var setting = {
+            view: {
+                showLine: false,
+                showIcon: false,
+                selectedMulti: false,
+                dblClickExpand: false,
+                addDiyDom: addDiyDom,
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: onClick,
+                beforeExpand: beforeExpand,
+                onExpand: onExpand
+            }
+        };
+
+        {% autoescape off %}
+        var zNodes =   {{ document.menu_json }};
+        {% endautoescape %}
+
+        //去掉第一个和最后一个
+        zNodes.shift();
+        zNodes.pop();
+        console.log(zNodes);
+
+        //重写treenode_switch
+        function addDiyDom(treeId, treeNode) {
+            var spaceWidth = 5;
+            var switchObj = $("#" + treeNode.tId + "_switch"),
+            icoObj = $("#" + treeNode.tId + "_ico");
+            switchObj.remove();
+            icoObj.before(switchObj);
+
+            if (treeNode.level > 1) {
+                var spaceStr = "<span style='display: inline-block;width:" + (spaceWidth * treeNode.level)+ "px'></span>";
+                switchObj.before(spaceStr);
+            }
+        }
+
+        //只在单击的时候打开
+        function onClick(e,treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("treeMenu");
+            zTree.expandNode(treeNode, null, null, null, true);
+
+            //ajax获取路径和内容渲染到
+            //$('.menu_path').html(getMenuPath(treeNode));
+            $('.menu-title').html(treeNode.name);
+            getContent(treeNode.id);
+        }
+
+        //获取目录的父级路径
+        function getMenuPath(treeNode){
+            var html = "";
+
+            if (treeNode.pId > 0) {
+                html += getMenuPath(treeNode.getParentNode());
+            }
+            
+            html += '<i class="icon-double-angle-right"></i>'+treeNode.name;
+            return html;
+        }
+
+        $(document).ready(function(){
+            var xx = getUrlParam('subMenu');
+
+            if(xx) {
+                $('.doc-left').hide();
+                for(var i=0,len=zNodes.length; i<len; i++){
+                    if (zNodes[i].id == xx) {
+                        $('.menu-title').html(zNodes[i].name);
+                        getContent(xx);
+                        break;
+                    }
+                }
+            } else {
+                initTree();
+            }
+
+        });
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
+
+        function initTree(){
+            var treeObj = $("#treeMenu");
+            console.log('nonono');
+            //初始化目录结构
+            var ztree = $.fn.zTree.init(treeObj, setting, zNodes);
+            //根据屏幕宽度进行响应(应对移动设备的访问)
+            if( isMobile()|| $(window).width() < 1000){
+                AdaptToMobile();
+            }
+
+            //默认点击第一个
+            ztree.expandAll(false);
+            zTree_Menu = $.fn.zTree.getZTreeObj("treeMenu");
+            curMenu = zTree_Menu.getNodes()[0];
+            zTree_Menu.selectNode(curMenu);
+            var treeSub = treeObj.children('li');
+            if (treeSub.length>0) {
+                $($(treeSub[0]).find('a')[0]).addClass('active');
+            }
+            $('.menu-title').html(curMenu.name);
+            getContent(curMenu.id);
+
+            //事件
+            treeObj.on("click mouseenter mouseleave", "li>a", function(event){
+                if (event.type == 'click') {
+                    $('#treeMenu').find('a').removeClass('active');
+                    $(this).addClass('active');
+                }
+                if ( event.type == "mouseenter"){
+                    $(this).addClass('active'); 
+
+                }else if(event.type == "mouseleave" && !$(this).hasClass('curSelectedNode')){
+                    $(this).removeClass('active');
+
+                } 
+               
+            });
+        }
+
+      
+
+        var curExpandNode = null;
+        function beforeExpand(treeId, treeNode) {
+            var pNode = curExpandNode ? curExpandNode.getParentNode():null;
+            var treeNodeP = treeNode.parentTId ? treeNode.getParentNode():null;
+            var zTree = $.fn.zTree.getZTreeObj("treeMenu");
+            for(var i=0, l=!treeNodeP ? 0:treeNodeP.children.length; i<l; i++ ) {
+                if (treeNode !== treeNodeP.children[i]) {
+                    zTree.expandNode(treeNodeP.children[i], false);
+                }
+            }
+            while (pNode) {
+                if (pNode === treeNode) {
+                    break;
+                }
+                pNode = pNode.getParentNode();
+            }
+            if (!pNode) {
+                singlePath(treeNode);
+            }
+
+        }
+        function singlePath(newNode) {
+            if (newNode === curExpandNode) return;
+
+            var zTree = $.fn.zTree.getZTreeObj("treeMenu"),
+                    rootNodes, tmpRoot, tmpTId, i, j, n;
+
+            if (!curExpandNode) {
+                tmpRoot = newNode;
+                while (tmpRoot) {
+                    tmpTId = tmpRoot.tId;
+                    tmpRoot = tmpRoot.getParentNode();
+                }
+                rootNodes = zTree.getNodes();
+                for (i=0, j=rootNodes.length; i<j; i++) {
+                    n = rootNodes[i];
+                    if (n.tId != tmpTId) {
+                        zTree.expandNode(n, false);
+                    }
+                }
+            } else if (curExpandNode && curExpandNode.open) {
+                if (newNode.parentTId === curExpandNode.parentTId) {
+                    zTree.expandNode(curExpandNode, false);
+                } else {
+                    var newParents = [];
+                    while (newNode) {
+                        newNode = newNode.getParentNode();
+                        if (newNode === curExpandNode) {
+                            newParents = null;
+                            break;
+                        } else if (newNode) {
+                            newParents.push(newNode);
+                        }
+                    }
+                    if (newParents!=null) {
+                        var oldNode = curExpandNode;
+                        var oldParents = [];
+                        while (oldNode) {
+                            oldNode = oldNode.getParentNode();
+                            if (oldNode) {
+                                oldParents.push(oldNode);
+                            }
+                        }
+                        if (newParents.length>0) {
+                            zTree.expandNode(oldParents[Math.abs(oldParents.length-newParents.length)-1], false);
+                        } else {
+                            zTree.expandNode(oldParents[oldParents.length-1], false);
+                        }
+                    }
+                }
+            }
+            curExpandNode = newNode;
+        }
+
+        function onExpand(event, treeId, treeNode) {
+            curExpandNode = treeNode;
+        }
+
+        //ajax获取文档内容
+        function getContent(id) {
+            menu_id = id;
+    
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: {{document.id}},
+                data:{'product_id': {{document.id}}, 'menu_id':menu_id},
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+
+                    if (data.success) {
+
+                        //设置作者和文档类型
+                        var docu_type = data.data.content_type == 1 ? ' MarkDown' : ' Editor';
+                        $('#content-author').html('作者: {{document.author}}&nbsp;&nbsp;•&nbsp&nbsp;;编辑器类型:'+ docu_type);
+
+                        //设置时间
+                        var cre_time = data.data.publish_time ? data.data.publish_time : '{{document.publish_time|date:"Y-m-d H:i:s"}}';
+                        var upd_time = data.data.modify_time ? data.data.modify_time : '{{document.modify_time|date:"Y-m-d H:i:s"}}';
+                        $('#content-time').html('创建时间: '+cre_time+'&nbsp;&nbsp;•&nbsp;&nbsp;修改时间: '+ upd_time);
+
+
+                        if (data.data.content == '') {
+                            //什么也不做
+                            return false;
+                        }
+
+                        
+
+                        if (data.data.content_type == 1) {
+                            $('#content').html('<textarea style="display:none;">'+data.data.content+'</textarea>');
+                            //markdown
+                            editormd.markdownToHTML("content", {
+                                htmlDecode: "style,script,iframe", //可以过滤标签解码
+                                emoji: true,
+                                taskList:true,
+                                tex: true,               // 默认不解析
+                                flowChart:true,         // 默认不解析
+                                sequenceDiagram:true,  // 默认不解析
+                            });
+                        } else {
+                             $('#content').html(data.data.content);
+                        }
+
+                    } else {
+                        $('#content').html('');
+                    }
+                },
+            });
+        }
+
+        /*判断是否是移动设备*/
+        function isMobile(){
+            return navigator.userAgent.match(/iPhone|iPad|iPod|Android|android|BlackBerry|IEMobile/i) ? true : false; 
+        }
+
+        $(window).resize(function(){
+            if( isMobile()){
+                AdaptToMobile();
+            }   else if($(window).width() < 1000){
+                AdaptToMobile();
+            }else{
+              window.location.reload();
+            }
+        });
+
+        function AdaptToMobile(){
+            $(".doc-left").removeClass("span3");
+            $(".doc-left").css("width",'100%');
+            $(".doc-left").css("height",'initial');
+            $(".doc-left").css("min-height",'0px');
+            $(".doc-left").css("margin",'0px');
+            $("#treeMenu").css("padding",'0 20px');
+
+            $(".doc-right").removeClass("span12");
+            $(".doc-right").css("padding", '10px 30px');
+            $(".doc-right").css("clear", 'both');
+            $(".doc-head .right").hide();
+            //$(".page-edit-link").html('');
+            //$(".doc-left-newbar").html('');
+            //$(".iframe_content").css("padding-left","30px");
+            //$(".iframe_content").css("width",'');
+            //$(".doc-left .nav-list li a i ").css("margin-left" , '10px');
+            //$(".search-input-append").css("width","100%");
+            //$(".search-query-input").css("width","70%");
+
+
+
+        }
+        //-->
+    </SCRIPT>
+
+</HEAD>
+
+
+<body>
+
+<div class="doc-head row">
+    <div class="left "><span style="font-size:30px;">{{document.name}}</span></div>
+    <div class="right">
+        <ul class="inline pull-right">
+           
+            {% if not user.is_authenticated %}
+                <li><a href="/admin/login">登录</a></li>
+            {% else %}
+                <li class="dropdown">
+                    <a href="#" style="padding-top: 5px;padding-bottom: 5px" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar">
+                            <img alt="" src="{{ user.avatar_path }}"/>
+                        </div>
+                        <span style="color: #f89406">{{ user.name }}</span>
+                        <span class="caret" style="border-top: 4px solid #f89406;"></span>
+                    </a>
+                    <ul class="dropdown-menu" style="margin-top: 10px">
+                        <li><a href="/admin" style="color: #d20d0e;">管理后台</a></li>
+                        <li><a href="/logout" style="color: #d20d0e;">退出登录</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+
+<div class="doc-body row">
+    <!-- 左侧栏菜单 -->
+    <div class="doc-left span3 bs-docs-sidebar pull-left" style="min-height: 100%;">
+
+        <form class="form-search text-center" action="" method="post">
+            <!--暂时不用搜索
+            <div class="input-append search-input-append">
+                <i class="icon-blank"></i>
+                <input name="keyword" class="search-query search-query-input" type="text">
+                <input name="item_id" value="3" type="hidden">
+                <button type="submit" class="btn"><i class="icon-search"></i></button>
+            </div>-->
+        </form>
+
+        <!--目录-->
+        <ul id="treeMenu" class="ztree"></ul>
+
+    </div>
+
+    <!-- 详情显示 -->
+    <div class="doc-right span12 content-container">
+        <div class="content-title">
+            <h1 class="menu-title"></h1>
+            <div class="menu-sub">
+                <p id="content-author"></p>
+                <p id="content-time"></p>
+            </div>
+        </div>
+
+
+        <div id="content">
+
+        </div>
+    </div>
+  
+</div>
+</body>
+
+</html>
+
+

@@ -1,0 +1,875 @@
+{% extends './admin/base.html' %}
+
+{% block css %}
+    <link href="/static/css/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/css/fileinput.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/metronic/css/datepicker.css" rel="stylesheet" type="text/css"/>
+
+    <link href="/static/metronic/table/datatables.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/metronic/table/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        .table th, .table td {
+            text-align: center !important;
+        }
+        td {
+            font-size: 16px;
+        }
+        .form-control.input-sm.input-small.input-inline {
+            height: inherit;
+            margin-bottom: 0px;
+        }
+        #events_form input {
+            height: inherit;
+        }
+        .pic-preview {
+            float: left;
+            border: 1px solid #ddd;
+            box-shadow: 1px 1px 5px 0 #a2958a;
+            padding: 6px;
+            text-align: center;
+            width: 140px;
+            height: 160px;
+            text-overflow:ellipsis;
+            margin-right: 20px;
+        }
+        .pic-preview img, .pic-preview video {
+            width: 100%;
+            height: 90%;
+        }
+        .pic-preview p {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .media-preview .media-hide  {
+            display:none;
+            position:absolute;
+            left: 40%;
+            top: 20%;
+            border: 1px solid #ddd;
+            box-shadow: 1px 1px 5px 0 #a2958a;
+            padding: 6px;
+            text-align: center;
+            width: 213px;
+            height: 160px;
+        }
+        .media-preview img, .media-preview video{
+            width: 100%;
+            height: 100%;
+        }
+        .media-preview:hover .media-hide {
+            display: block;
+        }
+        .pic-hints {
+            color: red;
+            margin-left: 5px;
+            font-size: 12px;
+        }
+
+    </style>
+
+{% endblock %}
+
+
+{% block js %}
+    <script src="/static/js/fileinput.min.js" type="text/javascript"></script>
+    <script src="/static/js/fileinput_zh.js" type="text/javascript"></script>
+
+    <script src="/static/metronic/table/datatable.min.js" type="text/javascript"></script>
+    <script src="/static/metronic/table/datatables.min.js" type="text/javascript"></script>
+    <script src="/static/metronic/table/datatables.bootstrap.js" type="text/javascript"></script>
+    <script src="/static/metronic/table/table-datatables-editable.js" type="text/javascript"></script>
+    <script src="/static/metronic/js/bootstrap-datepicker.js" type="text/javascript"></script>
+    <script src="/static/metronic/js/bootstrap-datepicker.zh-CN.min.js" type="text/javascript"></script>
+
+
+{% endblock %}
+
+
+{% block main %}
+    <div class="container-fluid">
+
+        <!-- BEGIN PAGE HEADER-->
+
+         <div class="row-fluid">
+
+            <div class="span12">
+
+                <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+
+                <h3 class="page-title">
+
+                    柚子空间
+
+                    <small>后台管理</small>
+
+                </h3>
+
+                <!-- END PAGE TITLE & BREADCRUMB-->
+
+            </div>
+
+        </div>
+
+        <!-- END PAGE HEADER-->
+
+        <div class="row-fluid">
+
+
+            <div class="span12">
+                            <div class="portlet box green">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="icon-social-dribbble font-purple-soft"></i>
+                                        <span class="caption-subject font-purple-soft bold uppercase">首页管理</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body" style="min-height: 500px"">
+                                    <ul class="nav nav-tabs" style="margin-bottom: 30px">
+                                        <li class="active">
+                                            <a href="#tab_1_1" data-toggle="tab"> 批量上传 </a>
+                                        </li>
+
+                                        <li>
+                                            <a href="#tab_1_2" data-toggle="tab"> 成长记录 </a>
+                                        </li>
+
+                                        <li>
+                                            <a href="#tab_1_3" data-toggle="tab"> 成长数据 </a>
+                                        </li>
+
+                                        <li>
+                                            <a href="#tab_1_4" data-toggle="tab"> 页面设置 </a>
+                                        </li>
+
+
+
+
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade active in" id="tab_1_1">
+                                                <form id="album_form" class="form-horizontal">
+                                                    <div class="control-group">
+                                                        <select id="album_id_sel" name="docutype" class="span2 chosen" data-placeholder="请选择相册..."
+                                            tabindex="1" style="height: 34px;margin-right: 50px">
+                                                            <option value="0">请选择相册...</option>
+                                                           {% for alb in album %}
+                                                                <option value="{{ alb.id }}">{{ alb.title }}</option>
+                                                           {% endfor %}
+                                                        </select>
+
+                                                         <button type="button" id="album_new" class="btn green">
+                                                                    <i class="icon-plus"></i> 添加
+                                                         </button>
+                                                         <button type="button" id="album_edit" class="btn blue">
+                                                                <i class="icon-edit"></i> 编辑
+                                                         </button>
+                                                         <button type="button" id="album_view" class="btn yellow"><i class="icon-picture "></i> 查看</button>
+                                                         <button type="button" id="album_pic" class="btn red">
+                                                                <i class="icon-check"></i> 选择
+                                                         </button>
+
+
+                                                    </div>
+
+                                                </form>
+
+                                                <input id="input-pd" name="input-pd[]" type="file" multiple class="file-loading">
+                                        </div>
+
+
+
+                                        <div class="tab-pane fade" id="tab_1_2">
+                                            <div id="events_table_zone">
+                                                 <div class="table-toolbar">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="btn-group">
+                                                                <button id="events_new" class="btn green">
+                                                                    <i class="icon-plus"></i> 新增
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <table id="events-table" class="display" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>标题</th>
+                                                            <th>时间</th>
+                                                            <th>创建时间</th>
+                                                            <th>删除</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+
+                                             <form action="" method=""  id="events_form" class="form-horizontal" style="display: none">
+                                                <div class="control-group">
+                                                    <label class="control-label" style="text-align: left; width: 80px">标题</label>
+                                                    <div class="controls  margin_left0">
+                                                        <input id='title' type="text" name="title" value="" placeholder="请输入记录标题..." class="m-wrap large" >
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group">
+                                                    <label class="control-label" style="text-align: left; width: 80px">时间</label>
+                                                    <div class="controls  margin_left0">
+                                                         <input id="record_time" class="input-medium date-picker m-wrap large" size="16" type="text" value="" />
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="control-group">
+                                                    <label class="control-label" style="text-align: left; width: 80px">内容</label>
+                                                    <div class="controls margin_left0">
+                                                        <textarea class="m-wrap large" rows="5" id="events_content"></textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group">
+                                                    <label class="control-label" style="text-align: left; width: 80px">相册</label>
+                                                    <select id="events_album" name="events_album" class="span2 chosen" data-placeholder="请选择相册..."
+                                        tabindex="1" style="height: 34px">
+                                                        <option value="0">请选择相册...</option>
+                                                       {% for alb in album %}
+                                                            <option value="{{ alb.id }}">{{ alb.title }}</option>
+                                                       {% endfor %}
+                                                    </select>
+                                                </div>
+
+                                                 <div class="control-group">
+                                                    <label class="control-label" style="text-align: left; width: 80px">多媒体</label>
+                                                    <div class="controls margin_left0">
+                                                        <button type="button" class="btn blue" id="events-pic"><i class="icon-plus"></i> 选择</button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group">
+                                                    <label class="control-label" style="text-align: left; width: 80px"></label>
+                                                    <div class="controls  margin_left0"   id="events-zone">
+                                                    </div>
+                                                </div>
+
+                                                 <div class="control-group">
+                                                    <label class="control-label" style="text-align: left; width: 80px"></label>
+                                                    <div class="controls  margin_left0">
+                                                        <button type="button" id="save_events" class="btn green">保存</button>
+                                                        <button type="button" id="list_events" class="btn default">返回</button>
+                                                    </div>
+                                                </div>
+
+                                             </form>
+
+
+                                        </div>
+
+
+                                        <div class="tab-pane fade" id="tab_1_3">
+                                            <div class="table-toolbar">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="btn-group">
+                                                            <button id="sample_editable_1_new" class="btn green">
+                                                                <i class="icon-plus"></i> 新增
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
+                                                <thead>
+                                                    <tr>
+                                                        <th> 序号 </th>
+                                                        <th> 记录时间 </th>
+                                                        <th> 身高</th>
+                                                        <th> 体重 </th>
+                                                        <th> 头围 </th>
+                                                        <th> 创建时间 </th>
+                                                        <th> 编辑 </th>
+                                                        <th> 删除 </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                {% if growth_list %}
+                                                    {% for growth in growth_list %}
+                                                    <tr>
+                                                        <td growth-id="{{ growth.id }}"> {{forloop.counter}} </td>
+                                                        <td> {{ growth.record_time |date:"Y-m-d" }} </td>
+                                                        <td> {{ growth.height }} </td>
+                                                        <td> {{ growth.weight }}</td>
+                                                        <td> {{ growth.head }} </td>
+                                                        <td> {{ growth.create_time |date:"Y-m-d H:i:s" }} </td>
+                                                        <td>
+                                                             <a class="edit" href="javascript:;" title="编辑"><i class="icon-edit"></i></a>
+                                                        </td>
+                                                        <td>
+                                                             <a class="delete" href="javascript:;" title="删除"><i class="icon-trash"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% endif %}
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                       <div class="tab-pane fade" id="tab_1_4">
+                                           <form method="post" class="form-horizontal">
+
+                                                <div class="control-group">
+                                                    <label class="control-label" style="text-align: left; width: 80px">置顶图片</label>
+                                                    <div class="controls  margin_left0">
+                                                        <button type="button" class="btn blue" id="top-pic"><i class="icon-plus"></i> 选择</button>
+                                                        <span class="pic-hints">(只传一张图片)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <div class="controls  margin_left0" id="top-zone">
+                                                        <div class="pic-preview" pic-id="{{ top_pic.id }}">
+                                                            <img src="/upload/youzi/{{ top_pic.name }}">
+                                                            <p><i class="icon-trash pic-del"></i><span class="crousel-pic-name"> {{ top_pic.origin_name }} </span> </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                               <div class="control-group">
+                                                    <label class="control-label" style="text-align: left; width: 80px">轮播图片</label>
+                                                    <div class="controls  margin_left0">
+                                                        <button type="button" class="btn blue" id="crousel-pic"><i class="icon-plus"></i> 选择</button>
+                                                        <span class="pic-hints">(只传12张图片)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <div class="controls  margin_left0"   id="crousel-zone">
+                                                        {% for cpic in crousel_pic %}
+                                                        <div class="pic-preview" pic-id="{{ cpic.id }}">
+                                                            <img src="/upload/youzi/{{ cpic.name }}">
+                                                            <p><i class="icon-trash pic-del"></i><span class="crousel-pic-name"> {{ cpic.origin_name }} </span> </p>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group">
+                                                    <label class="control-label" style="text-align: left; width: 80px"></label>
+                                                    <div class="controls  margin_left0">
+                                                        <button type="button" class="btn green" id="save-config"><i class="icon-ok"></i> 保存</button>
+                                                    </div>
+                                                </div>
+
+                                           </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+
+    <!--选择图片的modal框-->
+    <div class="modal fade" id="select-media" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="left:40%;width:800px">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        多媒体选择
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <table id="media-table" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>名称</th>
+                                <th>创建时间</th>
+                                <th>预览</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" id="confirm_pic">
+                        确定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!--  相册新增或编辑 -->
+    <div class="modal fade" id="album_opt" tabindex="-1" role="dialog" aria-labelledby="AlbumOpt" aria-hidden="true" style="left:55%;width:355px">
+        <div class="modal-dialog" style="width: inherit">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">
+                    </button>
+                    <h4 class="modal-title" id="AlbumOpt">
+                        新增相册
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <input id="album_name" class="input-medium date-picker m-wrap large" size="16" type="text" value="" style="height:inherit"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" id="confirm_album">
+                        确定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <script type="text/javascript">
+        var sel_id = 0; //相册编辑ID
+
+        //批量上传
+        $("#input-pd").fileinput({
+            language: 'zh', //设置语言
+            uploadUrl: "youzi/upload",
+            uploadAsync: false,
+            minFileCount: 1,
+            maxFileCount: 50,
+            //showClose:false,
+            allowedFileExtensions : ['jpg', 'png','gif', 'avi', 'rmvb', 'rm', 'mpg','mpeg','mp4', 'mkv'],//接收的文件后缀
+            uploadExtraData: function(previewId, index) {
+                var nameList = [];
+                $(".kv-preview-thumb .file-alias").each(function(){
+                    nameList.push($(this).val());
+                });
+
+                return {'nameList':nameList, 'csrfmiddlewaretoken':'{{ csrf_token }}', 'album_id':$('#album_id_sel').val()};
+            }
+
+
+        }).on('filebatchpreupload', function(event, data, previewId, index){
+            //名称不能为空...., 暂时允许名字重复
+
+        }).on('filebatchuploadsuccess', function(e, params) {
+            //console.log('File uploaded params2', params);
+            //清空
+            //alert('ok');
+            $('.fileinput-remove-button').click();
+        });
+
+        //删除成长数据
+        function delete_growth(params){
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"youzi/growth/delete",
+                data: params,
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                },
+            });
+
+        }
+
+
+        //保存成长数据
+         function save_growth(params, obj){
+
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"youzi/growth/save",
+                data: params,
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    if (data.success == 1) {
+                        if (data.growth_id != '') {
+                            //设置id
+                            obj.attr('growth-id', data.growth_id);
+                        }
+                    } else {
+                        console.log(data);
+                    }
+
+                },
+            });
+
+        }
+
+        //点选成长记录图片
+        $('#top-pic').click(function (){
+            //计算已选项....重要
+             media_selected = [];
+             id_selected = [];
+             $('tr').removeClass('selected');
+
+            var obj = $('#top-zone').find('.pic-preview').eq(0);
+            if (obj.length) {
+                var id = obj.attr('pic-id');
+                id_selected.push(id);
+                var tmp = {
+                    'src':obj.find('img')[0].src,
+                    'id':id,
+                    'name':obj.find('.crousel-pic-name').eq(0).html()
+                };
+                media_selected.push(tmp);
+            }
+
+
+            //设置option
+            media_option = 1;
+            $('#select-media').modal('show');
+        });
+
+
+         //点选置顶图片
+        $('#events-pic').click(function (){
+            //计算已选项....重要
+             media_selected = [];
+             id_selected = [];
+             $('tr').removeClass('selected');
+
+            var obj = $('#events-zone').find('.pic-preview').eq(0);
+            if (obj.length) {
+                var id = obj.attr('pic-id');
+                id_selected.push(id);
+                var tmp = {
+                    'src':obj.find('img')[0].src,
+                    'id':id,
+                    'name':obj.find('.crousel-pic-name').eq(0).html()
+                };
+                media_selected.push(tmp);
+            }
+
+
+            //设置option
+            media_option = 0;
+            $('#select-media').modal('show');
+        });
+
+        //点选轮播图片
+        $('#crousel-pic').click(function (){
+             media_selected = [];
+             id_selected = [];
+             $('tr').removeClass('selected');
+            //计算已选项....重要
+            $('#crousel-zone').find('.pic-preview').each(function(){
+                var id = $(this).attr('pic-id');
+                id_selected.push(id);
+
+                var tmp = {
+                    'src':$(this).find('img')[0].src,
+                    'id':id,
+                    'name':$(this).find('.crousel-pic-name').eq(0).html()
+                };
+                media_selected.push(tmp);
+            });
+
+            //设置option
+            media_option = 2;
+            $('#select-media').modal('show');
+        });
+
+        //确认图片
+        $('#confirm_pic').click(function(){
+
+            if(media_option == 3) {
+                  $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url:"youzi/album/select",
+                    data: {'album_id':  $('#album_id_sel').val(), 'pic_ids':id_selected},
+                    dataType:"json",
+                    async: true,
+                    beforeSend:function(xhr, settings){
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                    },
+                    success: function(data) {
+                        if (data.success == 1) {
+                            $('#select-media').modal('hide');
+                           swal({
+                              title: "操作成功",
+                              text: "相册数据已更新",
+                              type: "success",
+                              confirmButtonText: "关闭"
+                            });
+
+                        } else {
+                            console.log(data);
+                        }
+
+                    },
+                });
+
+                return false;
+
+            }
+
+            //生成html
+            var html = "";
+            var len = media_selected.length;
+            var src = '';
+
+            for(var i=0; i<len; i++) {
+                src = media_selected[i].src;
+                html += ' <div class="pic-preview" pic-id="'+media_selected[i].id+'">\n';
+                if (src.indexOf(".jpg") != -1 || src.indexOf(".png") != -1 || src.indexOf(".gif") != -1) {
+                    html += '<img src="'+ src +'">\n';
+                } else {
+                    html +=  '<video controls src="'+src+'"></video>';
+                }
+                html +=  '<p><i class="icon-trash pic-del"></i><span class="crousel-pic-name"> '+media_selected[i].name+'</span> </p>\n' +
+                    '</div>';
+            }
+
+            if(media_option == 2) {
+                $('#crousel-zone').html(html);
+            }else if(media_option == 1) {
+                 $('#top-zone').html(html);
+            }else {
+                $('#events-zone').html(html);
+            }
+
+            $('#select-media').modal('hide');
+        });
+
+        //删除图像
+        $('#crousel-zone, #top-zone, #events-zone').on('click', '.pic-del', function () {
+            $(this).parents('.pic-preview').remove();
+        });
+
+        //保存首页配置
+        $('#save-config').click(function () {
+            var crousel_ids =  [];
+            $('#crousel-zone').find('.pic-preview').each(function(){
+                    var id = $(this).attr('pic-id');
+                    crousel_ids.push( $(this).attr('pic-id'));
+            });
+
+            /*
+            if (crousel_ids.length != 12) {
+                swal({
+                  title: "出错了",
+                  text: "轮播图片需要选择12张",
+                  type: "error",
+                  confirmButtonText: "关闭"
+                });
+                return false;
+            }*/
+
+            var top_id = '';
+            var top_obj = $('#top-zone').find('.pic-preview');
+            /*
+            if (top_obj.length != 1) {
+                  swal({
+                  title: "出错了",
+                  text: "置顶图片只能一张",
+                  type: "error",
+                  confirmButtonText: "关闭"
+                });
+                return false;
+            }*/
+            top_id = top_obj.eq(0).attr('pic-id');
+
+            //post提交
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"youzi/config/save",
+                data: {'top_id':top_id, 'crousel_ids':crousel_ids},
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    if (data.success == 1) {
+                       swal({
+                          title: "操作成功",
+                          text: "配置数据已保存",
+                          type: "success",
+                          confirmButtonText: "关闭"
+                        });
+                    } else {
+                        console.log(data);
+                    }
+
+                },
+            });
+
+        })
+
+        //设置datepicker
+        $('#record_time').datepicker({
+            language:"zh-CN",    //语言选择中文
+           format:"yyyy-mm-dd",    //格式化日期
+           yearEnd:2050,        //设置最大年份
+           todayButton:true,    //关闭选择今天按钮
+           autoclose: 1,        //选择完日期后，弹出框自动关闭
+           startView:3,         //打开弹出框时，显示到什么格式,3代表月
+           minView: 3,
+        })
+
+        //新增界面
+        $('#events_new').click(function(){
+            $('#events_form').show(500);
+            $('#events_table_zone').hide(500);
+        })
+
+        //返回
+        $('#list_events').click(function(){
+            $('#events_form').hide(500);
+            $('#events_table_zone').show(500);
+        });
+    
+        //保存记录
+        $('#save_events').click(function () {
+            var events_id = '';
+            var events_obj = $('#events-zone').find('.pic-preview');
+            if (events_obj.length != 1) {
+                  swal({
+                  title: "出错了",
+                  text: "置顶图片只能一张",
+                  type: "error",
+                  confirmButtonText: "关闭"
+                });
+                return false;
+            }
+            events_id = events_obj.eq(0).attr('pic-id');
+
+            var params = {
+                'title': $('#title').val(),
+                'record_time': $('#record_time').val(),
+                'content': $('#events_content').val(),
+                'album_id': $('#events_album').val(),
+                'media_id': events_id
+            }
+
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"youzi/events/save",
+                data: params,
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    if (data.success == 1) {
+                        $('#events-table').DataTable().ajax.reload(null, false);
+                         swal({
+                              title: "操作成功",
+                              text: "1秒后自动关闭。",
+                              timer: 500,
+                              showConfirmButton: false
+                            });
+                        $('#events_form').hide(500);
+                        $('#events_table_zone').show(500);
+
+                    } else {
+                       swal({
+                          title: "出错了",
+                          text: "保存记录失败",
+                          type: "error",
+                          confirmButtonText: "关闭"
+                        });
+                        console.log(data);
+                    }
+
+                },
+            });
+        })
+
+        //新增相册
+        $('#album_new').click(function(){
+            sel_id = 0;
+            $('#AlbumOpt').html('新增相册');
+            $('#album_name').val('');
+            $('#album_opt').modal('show');
+        });
+
+
+        //编辑相册
+        $('#album_edit').click(function(){
+            sel_id = $('#album_id_sel').val();
+            $('#AlbumOpt').html('编辑相册');
+            $('#album_name').val( $("#album_id_sel").find("option:selected").text());
+            $('#album_opt').modal('show');
+        });
+
+        //选择相册图片
+        $('#album_pic').click(function(){
+             media_selected = [];
+             id_selected = [];
+             $('tr').removeClass('selected');
+            //设置option
+            media_option = 3;
+            $('#select-media').modal('show');
+
+        });
+
+        //确认相册操作
+        $('#confirm_album').click(function(){
+            //post提交
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url:"youzi/album/save",
+                data: {'id':sel_id, 'title':$('#album_name').val()},
+                dataType:"json",
+                async: true,
+                beforeSend:function(xhr, settings){
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function(data) {
+                    if (data.success == 1) {
+                        $("#album_id_sel").html(data.data);
+                        $("#events_album").html(data.data);
+                         $('#album_opt').modal('hide');
+                       swal({
+                          title: "操作成功",
+                          text: "相册名称已保存",
+                          type: "success",
+                          confirmButtonText: "关闭"
+                        });
+
+                    } else {
+                        console.log(data);
+                    }
+
+                },
+            });
+        })
+
+        //查看相册
+        $('#album_view').click(function(){
+            window.open('/album/'+ $('#album_id_sel').val());
+        })
+
+
+
+    </script>
+
+{% endblock %}
